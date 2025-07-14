@@ -11,7 +11,7 @@ A comprehensive e-commerce backend API for the PrimePicks platform, built with E
 - **Shopping Cart**: In-memory cart, real-time product details
 - **Checkout System**: Order processing, payment simulation, order history in PostgreSQL
 - **Security**: CORS, Helmet, input validation, JWT
-- **Error Handling**: Consistent error responses
+- **Error Handling**: Consistent error responses 
 
 ---
 

@@ -20,8 +20,8 @@ const authenticateToken = (req, res, next) => {
                 message: 'Invalid or expired token'
             });
         }
-        
-        req.user = user;
+        // Support id, sub, or userId
+        req.user = { id: user.id || user.sub || user.userId, ...user };
         next();
     });
 };
@@ -34,7 +34,7 @@ const optionalAuth = (req, res, next) => {
     if (token) {
         jwt.verify(token, config.jwt.secret, (err, user) => {
             if (!err) {
-                req.user = user;
+                req.user = { id: user.id || user.sub || user.userId, ...user };
             }
         });
     }

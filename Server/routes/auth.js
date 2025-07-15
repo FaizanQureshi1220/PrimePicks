@@ -164,7 +164,8 @@ router.get('/profile', async (req, res) => {
                 username: true,
                 email: true,
                 createdAt: true,
-                updatedAt: true
+                updatedAt: true,
+                address: true
             }
         });
 
@@ -209,7 +210,7 @@ router.put('/profile', async (req, res) => {
         }
 
         const decoded = jwt.verify(token, config.jwt.secret);
-        const { username, email } = req.body;
+        const { username, email, address } = req.body;
 
         // Check if username or email already exists
         if (username || email) {
@@ -235,13 +236,15 @@ router.put('/profile', async (req, res) => {
             where: { id: decoded.userId },
             data: {
                 ...(username && { username }),
-                ...(email && { email })
+                ...(email && { email }),
+                ...(address && { address })
             },
             select: {
                 id: true,
                 username: true,
                 email: true,
-                updatedAt: true
+                updatedAt: true,
+                address: true
             }
         });
 

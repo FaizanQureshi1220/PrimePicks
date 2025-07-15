@@ -18,27 +18,91 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   orders    Order[]
+  cart      Cart?
+  address   Json?
 
   @@map("users")
 }
 
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  image       String?
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  stock       Int      @default(0)
+  rating      Float?   @default(0)
+  discountPercentage Float? @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("products")
+}
+
+model Category {
+  id    String   @id @default(cuid())
+  name  String   @unique
+  products Product[]
+
+  @@map("categories")
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@map("carts")
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String   // No relation to Product
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, productId])
+  @@map("cart_items")
+}
+
 model Order {
-  id              String   @id @default(cuid())
+  id              String      @id @default(cuid())
   userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items           Json     // Store cart items as JSON
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items           OrderItem[]
   subtotal        Float
   shipping        Float
   tax             Float
   total           Float
-  shippingAddress Json     // Store address as JSON
-  billingAddress  Json     // Store address as JSON
+  shippingAddress Json
+  billingAddress  Json
   paymentMethod   String
-  status          String   @default("pending") // pending, confirmed, shipped, delivered, cancelled
-  paymentStatus   String   @default("pending") // pending, paid, failed
+  status          String   @default("pending")
+  paymentStatus   String   @default("pending")
   paymentId       String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   @@map("orders")
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String   // No relation to Product
+  quantity  Int      @default(1)
+  price     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("order_items")
 } 

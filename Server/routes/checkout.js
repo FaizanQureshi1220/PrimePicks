@@ -64,15 +64,32 @@ router.post('/process', validateCart, async (req, res) => {
                 message: 'User not found'
             });
         }
+
+        // If user has no address, save the shipping address to their profile
+        if (!user.address) {
+            await prisma.user.update({
+                where: { id: userId },
+                data: { address: shippingAddress }
+            });
+        }
         
         // Process payment (simulated)
         const paymentResult = processPayment(total, paymentMethod);
+        
+        // Only keep productId, quantity, price for each item
+        const orderItems = cartItems.map(item => ({
+            productId: String(item.productId),
+            quantity: item.quantity,
+            price: item.price
+        }));
         
         // Create order
         const order = await prisma.order.create({
             data: {
                 userId,
-                items: cartItems,
+                items: {
+                  create: orderItems
+                },
                 subtotal: total,
                 shipping: 10.00, // Fixed shipping cost
                 tax: total * 0.08, // 8% tax
@@ -83,6 +100,9 @@ router.post('/process', validateCart, async (req, res) => {
                 status: paymentResult.success ? 'confirmed' : 'failed',
                 paymentStatus: paymentResult.success ? 'paid' : 'failed',
                 paymentId: paymentResult.success ? paymentResult.paymentId : null
+            },
+            include: {
+                items: true
             }
         });
         
@@ -102,9 +122,16 @@ router.post('/process', validateCart, async (req, res) => {
         
     } catch (error) {
         console.error('Checkout error:', error);
+        if (error instanceof Error) {
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
+        } else {
+            console.error('Error object:', JSON.stringify(error));
+        }
         res.status(500).json({ 
             success: false, 
-            message: 'Internal server error' 
+            message: 'Internal server error',
+            error: error.message || error
         });
     }
 });

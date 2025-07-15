@@ -12,7 +12,7 @@ module.exports = {
     nodeEnv: process.env.NODE_ENV || "development"
   },
   frontend: {
-    url: process.env.FRONTEND_URL || "http://localhost:5173"
+    url: process.env.FRONTEND_URL || "http://localhost:5174"
   },
   api: {
     productsUrl: process.env.PRODUCTS_API_URL || "https://dummyjson.com/products"

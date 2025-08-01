@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # PrimePicks Backend API
 
 A comprehensive e-commerce backend API for the PrimePicks platform, built with Express.js, Prisma, and PostgreSQL (NeonDB).
@@ -196,3 +197,6 @@ POST /api/checkout/process
 
 ## 📄 License
 This project is licensed under the ISC License. 
+=======
+# PrimePicks
+>>>>>>> fb5a4504a46f5299d0738cd63e49a638972f0b98

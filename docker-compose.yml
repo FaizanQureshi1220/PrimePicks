@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: primepicks-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres 
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres 
+    volumes:
+      - PrimePicks:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - primepicks-network
+
+  server:
+    build: ./Server
+    container_name: primepicks-server
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/postgres
+      - JWT_SECRET=PrimePicks
+      - PORT=3000
+      - NODE_ENV=production
+      - FRONTEND_URL=http://localhost:5173
+      - PRODUCTS_API_URL=https://dummyjson.com/products
+    depends_on:
+      - db
+    networks:
+      - primepicks-network
+    command: sh -c "npx prisma migrate deploy && npm start"
+
+  client:
+    build: ./Client
+    container_name: primepicks-client
+    ports:
+      - "5173:80"
+    networks:
+      - primepicks-network
+
+volumes:
+  PrimePicks:
+
+networks:
+  primepicks-network:
+    driver: bridge 

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -8,6 +9,7 @@ const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
 const checkoutRoutes = require('./routes/checkout');
+const paymentRoutes = require('./routes/payment');
 
 // Import middleware
 const { errorHandler, notFound } = require('./middleware/errorHandler');
@@ -17,7 +19,7 @@ const app = express();
 // Security middleware
 app.use(helmet());
 app.use(cors({
-    origin: config.frontend.url,
+    origin: ['http://localhost:5173', 'http://localhost:5174'],
     credentials: true
 }));
 
@@ -46,6 +48,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/checkout', checkoutRoutes);
+app.use('/api/payment', paymentRoutes);
 
 // Root route
 app.get('/', (req, res) => {

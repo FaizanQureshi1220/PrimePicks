@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: primepicks-config
+  labels:
+    app: primepicks
+data:
+  FRONTEND_URL: "http://client:5173"
+  PRODUCTS_API_URL: "https://dummyjson.com/products"
+  NODE_ENV: "development"
+  PORT: "3000" 

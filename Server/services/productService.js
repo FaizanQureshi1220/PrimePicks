@@ -3,7 +3,8 @@ const config = require('../config/database');
 
 class ProductService {
     constructor() {
-        this.apiUrl = config.api.productsUrl;
+        this.apiUrl = config.api.productsUrl.replace(/\/$/, ''); // remove trailing slash if present
+        console.log('ProductService constructor - apiUrl:', JSON.stringify(this.apiUrl));
         this.cache = new Map();
         this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
     }
@@ -15,7 +16,9 @@ class ProductService {
             const cached = this.getFromCache(cacheKey);
             if (cached) return cached;
 
-            const response = await axios.get(`${this.apiUrl}?limit=${limit}&skip=${skip}`);
+            const url = `${this.apiUrl}?limit=${limit}&skip=${skip}`;
+            console.log('getAllProducts - constructed URL:', JSON.stringify(url));
+            const response = await axios.get(url);
             const products = response.data.products || [];
             
             // Transform products to match our schema
@@ -52,7 +55,8 @@ class ProductService {
             const cached = this.getFromCache(cacheKey);
             if (cached) return cached;
 
-            const response = await axios.get(`${this.apiUrl}/category/${category}?limit=${limit}&skip=${skip}`);
+            const url = `${this.apiUrl}/category/${category}?limit=${limit}&skip=${skip}`;
+            const response = await axios.get(url);
             const products = response.data.products || [];
             
             const transformedProducts = products.map(product => ({
@@ -88,7 +92,8 @@ class ProductService {
             const cached = this.getFromCache(cacheKey);
             if (cached) return cached;
 
-            const response = await axios.get(`${this.apiUrl}/${id}`);
+            const url = `${this.apiUrl}/${id}`;
+            const response = await axios.get(url);
             const product = response.data;
             
             const transformedProduct = {
@@ -125,7 +130,8 @@ class ProductService {
             const cached = this.getFromCache(cacheKey);
             if (cached) return cached;
 
-            const response = await axios.get(`${this.apiUrl}/search?q=${encodeURIComponent(query)}&limit=${limit}&skip=${skip}`);
+            const url = `${this.apiUrl}/search?q=${encodeURIComponent(query)}&limit=${limit}&skip=${skip}`;
+            const response = await axios.get(url);
             const products = response.data.products || [];
             
             const transformedProducts = products.map(product => ({
@@ -161,7 +167,8 @@ class ProductService {
             const cached = this.getFromCache(cacheKey);
             if (cached) return cached;
 
-            const response = await axios.get(`${this.apiUrl}/categories`);
+            const url = `${this.apiUrl}/categories`;
+            const response = await axios.get(url);
             const categories = response.data || [];
             
             this.setCache(cacheKey, categories);

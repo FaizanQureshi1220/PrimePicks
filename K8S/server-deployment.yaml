@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      labels:
+        app: server
+    spec:
+      containers:
+        - name: server
+          image: primepicks-server:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://primeuser:primepassword@postgres:5432/primepicks?sslmode=disable"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: server-secret
+                  key: JWT_SECRET
+            - name: PORT
+              value: "3000"
+            - name: NODE_ENV
+              value: "development"
+            - name: FRONTEND_URL
+              value: "http://client:5173"
+            - name: PRODUCTS_API_URL
+              value: "https://dummyjson.com/products" 
